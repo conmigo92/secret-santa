@@ -1,9 +1,10 @@
+import { christmasCountdown } from "../domain/calendar";
 import { drawAssignments } from "../domain/draw";
 import { addExclusion, removeExclusion, removeParticipant } from "../domain/exclusions";
 import { encodeLink, pageUrl } from "../domain/link";
 import { addParticipant } from "../domain/participants";
 import type { Exclusion, LinkPayload, Participant } from "../domain/types";
-import { el, envelopeMark } from "./dom";
+import { el, hollyMark } from "./dom";
 
 export function mountOrganizer(root: HTMLElement): void {
   let participants: Participant[] = [];
@@ -101,12 +102,13 @@ export function mountOrganizer(root: HTMLElement): void {
 
   const shell = el("main", { className: "shell" }, [
     el("header", { className: "mast" }, [
-      envelopeMark(),
+      hollyMark(),
       el("h1", {}, [text("Secret"), el("span", { text: "Santa" })]),
       el("p", {
         className: "lede",
         text: "Add the people exchanging gifts, mark anyone who must not draw each other, then draw. Copy each private link to the person it names.",
       }),
+      el("p", { className: "countdown", text: christmasCountdown(new Date()) }),
     ]),
     personForm,
     excludeForm,
