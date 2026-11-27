@@ -1,21 +1,22 @@
 :root {
-  --pine: #10261f;
-  --pine-deep: #0b1c17;
-  --canopy: #1b4336;
-  --butter: #f0c84b;
-  --butter-hot: #ffe07a;
-  --paper: #f4f7f4;
-  --mist: #c9e0d4;
-  --ink: #14241c;
-  --seal: #6e2430;
-  --seal-ink: #ffd5db;
+  --holly: #123024;
+  --holly-deep: #0c2418;
+  --canopy: #1e4a34;
+  --gold: #f0c84b;
+  --gold-hot: #ffe07a;
+  --cream: #fff8ef;
+  --mist: #d7e6d0;
+  --ink: #1c2918;
+  --cranberry: #9f2430;
+  --cranberry-hot: #b83340;
+  --berry: #e24b4b;
   color-scheme: dark;
   font-family: "Figtree", "Segoe UI", sans-serif;
   font-size: 17px;
   line-height: 1.45;
-  background: var(--pine);
-  color: var(--paper);
-  caret-color: var(--butter);
+  background: var(--holly);
+  color: var(--cream);
+  caret-color: var(--gold);
 }
 
 *,
@@ -25,27 +26,62 @@
 }
 
 html {
-  scrollbar-color: var(--canopy) var(--pine);
+  scrollbar-color: var(--canopy) var(--holly);
 }
 
 body {
   margin: 0;
   min-height: 100dvh;
   background:
-    radial-gradient(900px 420px at 0% -10%, rgb(46 107 82 / 55%), transparent 60%),
-    radial-gradient(700px 380px at 110% 0%, rgb(240 200 75 / 16%), transparent 55%),
-    var(--pine);
+    radial-gradient(880px 420px at 8% -10%, rgb(180 40 48 / 28%), transparent 58%),
+    radial-gradient(720px 380px at 100% 0%, rgb(240 200 75 / 16%), transparent 52%),
+    var(--holly);
+}
+
+#app {
+  position: relative;
+  z-index: 1;
 }
 
 ::selection {
-  background: var(--butter);
+  background: var(--gold);
   color: var(--ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--butter-hot);
+  outline: 2px solid var(--gold-hot);
   outline-offset: 3px;
 }
+
+.snow {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.snow span {
+  position: absolute;
+  top: -8%;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.8;
+  animation: fall linear infinite;
+}
+
+.snow span:nth-child(1) { left: 6%; width: 5px; height: 5px; animation-duration: 16s; animation-delay: -4s; }
+.snow span:nth-child(2) { left: 14%; width: 3px; height: 3px; animation-duration: 20s; animation-delay: -12s; opacity: 0.55; }
+.snow span:nth-child(3) { left: 23%; width: 8px; height: 8px; animation-duration: 18s; animation-delay: -7s; }
+.snow span:nth-child(4) { left: 31%; width: 4px; height: 4px; animation-duration: 22s; animation-delay: -15s; opacity: 0.65; }
+.snow span:nth-child(5) { left: 42%; width: 5px; height: 5px; animation-duration: 15s; animation-delay: -2s; }
+.snow span:nth-child(6) { left: 51%; width: 3px; height: 3px; animation-duration: 19s; animation-delay: -9s; opacity: 0.5; }
+.snow span:nth-child(7) { left: 60%; width: 9px; height: 9px; animation-duration: 21s; animation-delay: -6s; }
+.snow span:nth-child(8) { left: 68%; width: 4px; height: 4px; animation-duration: 17s; animation-delay: -13s; }
+.snow span:nth-child(9) { left: 76%; width: 5px; height: 5px; animation-duration: 23s; animation-delay: -3s; opacity: 0.7; }
+.snow span:nth-child(10) { left: 84%; width: 3px; height: 3px; animation-duration: 18s; animation-delay: -11s; }
+.snow span:nth-child(11) { left: 91%; width: 6px; height: 6px; animation-duration: 20s; animation-delay: -8s; }
+.snow span:nth-child(12) { left: 97%; width: 4px; height: 4px; animation-duration: 16s; animation-delay: -1s; opacity: 0.6; }
 
 .shell {
   width: min(100% - 2rem, 34rem);
@@ -61,44 +97,53 @@ body {
 }
 
 .mark {
-  width: 2.6rem;
-  height: 2.6rem;
-  color: var(--butter);
+  width: 2.7rem;
+  height: 2.7rem;
 }
 
 h1,
-h2,
-label.heading {
-  font-family: "Bricolage Grotesque", "Figtree", sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 0.95;
+.countdown {
   margin: 0;
 }
 
 h1 {
-  font-size: clamp(3.4rem, 16vw, 5.25rem);
+  font-family: "Mountains of Christmas", "Figtree", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 0.9;
+  font-size: clamp(3.3rem, 16vw, 5.1rem);
+  color: var(--cream);
 }
 
 h1 span {
   display: block;
-  color: var(--butter);
+  color: var(--gold);
 }
 
 h2,
 label.heading {
-  font-size: 1.55rem;
+  font-family: "Figtree", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
   line-height: 1.1;
-}
-
-.lede {
-  margin: 0.35rem 0 0;
-  color: var(--mist);
-}
-
-.quiet {
+  font-size: 1.55rem;
   margin: 0;
+}
+
+.lede,
+.quiet,
+.on-gift {
+  margin: 0;
+}
+
+.lede,
+.quiet {
   color: var(--mist);
+}
+
+.countdown {
+  color: var(--gold);
+  font-weight: 600;
 }
 
 .stack {
@@ -141,10 +186,10 @@ select {
   width: 100%;
   min-height: 2.85rem;
   padding: 0.65rem 0.75rem;
-  border: 1px solid rgb(201 224 212 / 38%);
+  border: 1px solid rgb(240 200 75 / 38%);
   border-radius: 0.7rem;
-  background: var(--pine-deep);
-  color: var(--paper);
+  background: var(--holly-deep);
+  color: var(--cream);
   font: inherit;
 }
 
@@ -153,7 +198,7 @@ input[readonly] {
 }
 
 ::placeholder {
-  color: #d5ebe1;
+  color: #c9dcc8;
   opacity: 1;
 }
 
@@ -171,24 +216,24 @@ a.primary {
 button.primary,
 a.primary {
   border: 0;
-  background: var(--butter);
-  color: var(--ink);
-  box-shadow: 0 10px 24px rgb(0 0 0 / 22%);
+  background: var(--cranberry);
+  color: var(--cream);
+  box-shadow: 0 10px 24px rgb(0 0 0 / 24%);
 }
 
 button.primary:hover:not(:disabled),
 a.primary:hover {
-  background: var(--butter-hot);
+  background: var(--cranberry-hot);
 }
 
 button.ghost {
-  border: 1px solid rgb(201 224 212 / 45%);
+  border: 1px solid rgb(215 230 208 / 45%);
   background: transparent;
-  color: var(--paper);
+  color: var(--cream);
 }
 
 button.ghost:hover {
-  background: rgb(244 247 244 / 8%);
+  background: rgb(255 248 239 / 8%);
 }
 
 button:disabled {
@@ -217,7 +262,7 @@ a.action {
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.7rem 0;
-  border-top: 1px solid rgb(201 224 212 / 20%);
+  border-top: 1px solid rgb(215 230 208 / 20%);
 }
 
 .links li {
@@ -238,7 +283,7 @@ a.action {
   flex: 1 0 100%;
   min-height: 1.2rem;
   margin: 0;
-  color: var(--butter);
+  color: var(--gold);
   font-size: 0.92rem;
 }
 
@@ -246,31 +291,130 @@ a.action {
   margin: 0;
   padding: 0.75rem 0.85rem;
   border-radius: 0.7rem;
-  background: var(--seal);
-  color: var(--seal-ink);
+  background: #6e1c28;
+  color: var(--cream);
 }
 
 .slip {
-  padding-top: 12vh;
+  padding-top: 8vh;
+}
+
+.gift {
+  position: relative;
+}
+
+.present {
+  position: relative;
+  background: var(--cream);
+  color: var(--ink);
+  border-radius: 1.15rem;
+  padding: 2.5rem 1.3rem 1.4rem;
+  box-shadow: 0 18px 36px rgb(0 0 0 / 28%);
+}
+
+.ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.85rem;
+  border-radius: 1.15rem 1.15rem 0 0;
+  background: var(--cranberry);
+}
+
+.present > .bow {
+  top: 0.2rem;
+  z-index: 1;
+}
+
+.present .on-gift {
+  margin-top: 0.7rem;
+  color: var(--ink);
+}
+
+.present .countdown {
+  margin-top: 1.15rem;
+  color: var(--cranberry);
+}
+
+.present .whisper {
+  margin: 0.85rem 0 0;
+  color: #3c5144;
+}
+
+.present .notes {
+  margin-top: 1.15rem;
+}
+
+.present .notes dt {
+  color: #8d1e28;
+}
+
+.present .notes dd {
+  color: var(--ink);
+}
+
+.present a.action {
+  margin-top: 1.25rem;
+}
+
+.lid {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.15rem;
+  background: var(--cranberry);
+  box-shadow: 0 16px 30px rgb(0 0 0 / 24%);
+  pointer-events: none;
+  overflow: hidden;
+  animation: unwrap 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lid::before,
+.lid::after {
+  content: "";
+  position: absolute;
+  background: var(--gold);
+}
+
+.lid::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1.15rem;
+  transform: translateX(-50%);
+}
+
+.lid::after {
+  left: 0;
+  right: 0;
+  top: 42%;
+  height: 1.15rem;
+}
+
+.bow {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 42%;
+  width: 5.2rem;
+  height: 3.2rem;
+  transform: translate(-50%, -55%);
 }
 
 .giftee {
-  margin-top: 0.4rem;
-  color: var(--butter);
-  animation: settle 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  margin: 0.35rem 0 0;
+  color: var(--cranberry);
+  animation: reveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
 }
 
 .broken {
-  font-size: clamp(2.6rem, 11vw, 4rem);
-  max-width: 10ch;
-}
-
-.tear {
-  height: 1px;
-  margin: 0.4rem 0;
-  background-image: linear-gradient(to right, var(--mist) 45%, transparent 0);
-  background-size: 14px 1px;
-  background-repeat: repeat-x;
+  font-family: "Figtree", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-size: clamp(2.3rem, 10vw, 3.3rem);
+  line-height: 1;
+  color: var(--ink);
+  max-width: 12ch;
 }
 
 .notes {
@@ -285,7 +429,6 @@ a.action {
 }
 
 .notes dt {
-  color: var(--mist);
   font-size: 0.85rem;
   font-weight: 600;
 }
@@ -293,10 +436,6 @@ a.action {
 .notes dd {
   margin: 0;
   font-size: 1.2rem;
-}
-
-.alone {
-  margin-top: 1.6rem;
 }
 
 .exclude-row .primary {
@@ -311,15 +450,43 @@ a.action {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .snow {
+    display: none;
+  }
+
+  .lid {
+    display: none;
+  }
+
   .giftee {
     animation: none;
   }
 }
 
-@keyframes settle {
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+  }
+}
+
+@keyframes unwrap {
+  0% {
+    transform: translateY(0) rotate(0);
+    opacity: 1;
+  }
+  62% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-58%) rotate(-8deg);
+    opacity: 0;
+  }
+}
+
+@keyframes reveal {
   from {
-    filter: blur(10px);
-    transform: translateY(12px);
+    filter: blur(8px);
+    transform: translateY(10px);
   }
   to {
     filter: blur(0);

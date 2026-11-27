@@ -19,25 +19,60 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   return node;
 }
 
-export function envelopeMark(): SVGSVGElement {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+const ns = "http://www.w3.org/2000/svg";
+
+export function hollyMark(): SVGSVGElement {
+  const svg = document.createElementNS(ns, "svg");
   svg.setAttribute("viewBox", "0 0 48 48");
   svg.setAttribute("aria-hidden", "true");
   svg.classList.add("mark");
-  const frame = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  frame.setAttribute("x", "6");
-  frame.setAttribute("y", "12");
-  frame.setAttribute("width", "36");
-  frame.setAttribute("height", "26");
-  frame.setAttribute("rx", "2");
-  const flap = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  flap.setAttribute("d", "M8 14 L24 28 L40 14");
-  for (const shape of [frame, flap]) {
-    shape.setAttribute("fill", "none");
-    shape.setAttribute("stroke", "currentColor");
-    shape.setAttribute("stroke-width", "2.5");
-    shape.setAttribute("stroke-linejoin", "round");
-    svg.append(shape);
-  }
+  svg.append(
+    path("M24 6 C14 14 6 16 8 28 C14 24 18 20 21 16 C16 24 14 34 22 36 C25 26 26 16 24 6 Z", "#8fce73"),
+    path("M24 6 C34 14 42 16 40 28 C34 24 30 20 27 16 C32 24 34 34 26 36 C23 26 22 16 24 6 Z", "#4f8f3c"),
+    berry("24", "32", "4.4"),
+    berry("16.5", "37", "3.5"),
+    berry("31.5", "37", "3.5"),
+  );
   return svg;
+}
+
+export function bowMark(): SVGSVGElement {
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 64 40");
+  svg.setAttribute("aria-hidden", "true");
+  svg.classList.add("bow");
+  svg.append(
+    ellipse("20", "16", "12", "8", "#f0c84b"),
+    ellipse("44", "16", "12", "8", "#f0c84b"),
+    path("M32 18 L16 38 L26 36 Z", "#e2b43a"),
+    path("M32 18 L48 38 L38 36 Z", "#e2b43a"),
+    ellipse("32", "18", "5", "5", "#fff1c2"),
+  );
+  return svg;
+}
+
+function berry(cx: string, cy: string, r: string): SVGCircleElement {
+  const node = document.createElementNS(ns, "circle");
+  node.setAttribute("cx", cx);
+  node.setAttribute("cy", cy);
+  node.setAttribute("r", r);
+  node.setAttribute("fill", "#e24b4b");
+  return node;
+}
+
+function ellipse(cx: string, cy: string, rx: string, ry: string, fill: string): SVGEllipseElement {
+  const node = document.createElementNS(ns, "ellipse");
+  node.setAttribute("cx", cx);
+  node.setAttribute("cy", cy);
+  node.setAttribute("rx", rx);
+  node.setAttribute("ry", ry);
+  node.setAttribute("fill", fill);
+  return node;
+}
+
+function path(d: string, fill: string): SVGPathElement {
+  const node = document.createElementNS(ns, "path");
+  node.setAttribute("d", d);
+  node.setAttribute("fill", fill);
+  return node;
 }
