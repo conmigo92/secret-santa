@@ -37,3 +37,7 @@ Open Christmas Trivia from the home page or the games nav. Add players or teams.
 ## Charades
 
 Open Charades from the home page or the games nav. Add two or more teams. Pick charades or pictionary, pick easy, medium, hard, or a mix, and set the seconds. The actor taps Show word. The guessers should be looking away. Got it scores a point and passes to the next team. Skip deals a new word to the same team. The scores stay in this browser until you start a new game.
+
+## Ugly Sweater
+
+Open Ugly Sweater from the home page or the games nav. The host adds the contestants. Pass the phone. Each person votes once, in three categories, and cannot vote for themselves. The ballots stay hidden. When everyone has voted, the host reveals the winners. A tie lists every name. The contest stays in this browser until you start a new one.

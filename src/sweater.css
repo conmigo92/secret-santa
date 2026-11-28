@@ -1,0 +1,18 @@
+.shell.party {
+  width: min(100% - 1.25rem, 40rem);
+}
+
+.shell.party .rows li > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.winner {
+  margin: 0.2rem 0 0;
+  color: var(--gold);
+  font-size: clamp(1.6rem, 7vw, 2.4rem);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}

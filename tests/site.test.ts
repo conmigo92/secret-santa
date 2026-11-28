@@ -12,6 +12,7 @@ describe("game list", () => {
       "Dirty Santa",
       "Christmas Trivia",
       "Charades",
+      "Ugly Sweater",
     ]);
     expect(games.map((game) => game.href)).toEqual([
       "secret-santa/",
@@ -19,6 +20,7 @@ describe("game list", () => {
       "dirty-santa/",
       "trivia/",
       "charades/",
+      "sweater/",
     ]);
     expect(games.map((game) => game.guide)).toEqual([
       "how-to/secret-santa/",
@@ -26,6 +28,7 @@ describe("game list", () => {
       "how-to/dirty-santa/",
       "how-to/trivia/",
       "how-to/charades/",
+      "how-to/sweater/",
     ]);
     expect(games.map((game) => game.order)).toEqual(games.map((_, index) => index));
     expect(games.every((game) => game.pitch.length > 0)).toBe(true);
