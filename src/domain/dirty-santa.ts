@@ -15,6 +15,31 @@ export const DEFAULT_FACE_MAP: FaceMap = {
   6: "keep",
 };
 
+export const DICE_FACES: readonly Face[] = [1, 2, 3, 4, 5, 6];
+
+export const FACE_EFFECTS: readonly FaceEffect[] = [
+  "passLeft",
+  "passRight",
+  "swapAny",
+  "allLeft",
+  "allRight",
+  "keep",
+];
+
+export const DICE_SETTINGS = {
+  minutes: { min: 0.25, max: 30, step: 0.25, default: 3 },
+  rounds: { min: 1, max: 2, default: 1 },
+  msPerMinute: 60_000,
+  faces: DEFAULT_FACE_MAP,
+} as const;
+
+export function minutesToDurationMs(minutes: number): number {
+  return Math.round(minutes * DICE_SETTINGS.msPerMinute);
+}
+
+const MIN_DURATION_MS = minutesToDurationMs(DICE_SETTINGS.minutes.min);
+const MAX_DURATION_MS = minutesToDurationMs(DICE_SETTINGS.minutes.max);
+
 export interface DiceRules {
   durationMs: number;
   round2: boolean;
@@ -58,12 +83,10 @@ export interface DiceGame {
 
 export type DiceResult = { ok: true; game: DiceGame } | { ok: false; reason: string; game: DiceGame };
 
-const FACES: Face[] = [1, 2, 3, 4, 5, 6];
-
 export function startDice(names: readonly string[], rules: DiceRules, now: number): DiceResult {
   const cleaned = cleanedNames(names);
   if (!cleaned.ok) return { ...cleaned, game: emptyGame(rules, now) };
-  if (!Number.isInteger(rules.durationMs) || rules.durationMs < 15_000 || rules.durationMs > 1_800_000) {
+  if (!Number.isInteger(rules.durationMs) || rules.durationMs < MIN_DURATION_MS || rules.durationMs > MAX_DURATION_MS) {
     return { ok: false, reason: "Set the round from 15 seconds to 30 minutes.", game: emptyGame(rules, now) };
   }
   if (!validFaces(rules.faces)) {
@@ -190,19 +213,18 @@ export function startRound2(game: DiceGame, now: number): DiceResult {
 }
 
 export function parseDice(data: unknown): DiceGame | null {
-  if (!isRecord(data) || !exactKeys(data, ["seats", "gifts", "turn", "phase", "faces", "round2", "wrapped", "timer"])) {
-    return null;
-  }
+  if (!isRecord(data) || !diceKeys(data)) return null;
   const seats = parseSeats(data.seats);
   const gifts = parseGifts(data.gifts);
   const timer = parseTimer(data.timer);
   const phase = parsePhase(data.phase);
-  const faces = parseFaces(data.faces);
+  const faces = Object.prototype.hasOwnProperty.call(data, "faces") ? parseFaces(data.faces) : { ...DEFAULT_FACE_MAP };
   if (!seats || !gifts || !timer || !phase || !faces) return null;
   if (typeof data.turn !== "number" || !Number.isInteger(data.turn) || data.turn < 0 || data.turn >= seats.length) {
     return null;
   }
-  if (typeof data.round2 !== "boolean" || typeof data.wrapped !== "boolean") return null;
+  const round2 = Object.prototype.hasOwnProperty.call(data, "round2") ? data.round2 : false;
+  if (typeof round2 !== "boolean" || typeof data.wrapped !== "boolean") return null;
   if (seats.length < 2 || gifts.length !== seats.length || !holdsMatch(seats, gifts)) return null;
 
   const game: DiceGame = {
@@ -211,7 +233,7 @@ export function parseDice(data: unknown): DiceGame | null {
     turn: data.turn,
     phase,
     faces,
-    round2: data.round2,
+    round2,
     wrapped: data.wrapped,
     timer,
   };
@@ -281,30 +303,22 @@ function rightOf(index: number, count: number): number {
 }
 
 function validFaces(faces: Partial<FaceMap>): faces is FaceMap {
-  return FACES.every((face) => isEffect(faces[face]));
+  return DICE_FACES.every((face) => isEffect(faces[face]));
 }
 
 function parseFaces(value: unknown): FaceMap | null {
-  if (!isRecord(value) || !exactKeys(value, ["1", "2", "3", "4", "5", "6"])) return null;
-  const one = isEffect(value["1"]) ? value["1"] : null;
-  const two = isEffect(value["2"]) ? value["2"] : null;
-  const three = isEffect(value["3"]) ? value["3"] : null;
-  const four = isEffect(value["4"]) ? value["4"] : null;
-  const five = isEffect(value["5"]) ? value["5"] : null;
-  const six = isEffect(value["6"]) ? value["6"] : null;
-  if (!one || !two || !three || !four || !five || !six) return null;
-  return { 1: one, 2: two, 3: three, 4: four, 5: five, 6: six };
+  if (!isRecord(value) || !exactKeys(value, DICE_FACES.map((face) => String(face)))) return null;
+  const parsed: Partial<FaceMap> = {};
+  for (const face of DICE_FACES) {
+    const effect = value[String(face)];
+    if (!isEffect(effect)) return null;
+    parsed[face] = effect;
+  }
+  return validFaces(parsed) ? parsed : null;
 }
 
 function isEffect(value: unknown): value is FaceEffect {
-  return (
-    value === "passLeft" ||
-    value === "passRight" ||
-    value === "swapAny" ||
-    value === "allLeft" ||
-    value === "allRight" ||
-    value === "keep"
-  );
+  return FACE_EFFECTS.some((effect) => effect === value);
 }
 
 function cleanedNames(names: readonly string[]): { ok: true; names: string[] } | { ok: false; reason: string } {
@@ -366,7 +380,9 @@ function parseGifts(value: unknown): DiceGift[] | null {
 function parseTimer(value: unknown): DiceTimer | null {
   if (!isRecord(value) || !exactKeys(value, ["durationMs", "remainingMs", "deadline"])) return null;
   if (typeof value.durationMs !== "number" || typeof value.remainingMs !== "number") return null;
-  if (!Number.isInteger(value.durationMs) || value.durationMs < 15_000 || value.durationMs > 1_800_000) return null;
+  if (!Number.isInteger(value.durationMs) || value.durationMs < MIN_DURATION_MS || value.durationMs > MAX_DURATION_MS) {
+    return null;
+  }
   if (!Number.isFinite(value.remainingMs) || value.remainingMs < 0) return null;
   if (value.deadline !== null && (typeof value.deadline !== "number" || !Number.isFinite(value.deadline))) return null;
   return { durationMs: value.durationMs, remainingMs: value.remainingMs, deadline: value.deadline };
@@ -420,6 +436,14 @@ function playable(game: DiceGame): boolean {
   if (game.phase.round === 2 && (!game.round2 || game.wrapped)) return false;
   if (timer.deadline === null && timer.remainingMs <= 0) return false;
   return true;
+}
+
+function diceKeys(value: Record<string, unknown>): boolean {
+  const allowed = ["seats", "gifts", "turn", "phase", "faces", "round2", "wrapped", "timer"];
+  const required = ["seats", "gifts", "turn", "phase", "wrapped", "timer"];
+  const present = Object.keys(value);
+  if (present.some((key) => !allowed.includes(key))) return false;
+  return required.every((key) => Object.prototype.hasOwnProperty.call(value, key));
 }
 
 function exactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {

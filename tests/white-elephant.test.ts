@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   act,
+  DEFAULT_ELEPHANT_RULES,
   parseElephant,
   startElephant,
   type ElephantGame,
@@ -12,10 +13,18 @@ const people = ["Ada", "Bea", "Cal", "Dee"];
 
 function game(
   names: string[],
-  rules: { stealLimit: number; finalSwap: boolean },
+  rules: { stealLimit: number; finalSwap: boolean; stealBackBan?: boolean },
   seed = 1,
 ): ElephantGame {
-  const started = startElephant(names, rules, mulberry32(seed));
+  const started = startElephant(
+    names,
+    {
+      stealLimit: rules.stealLimit,
+      finalSwap: rules.finalSwap,
+      stealBackBan: rules.stealBackBan ?? true,
+    },
+    mulberry32(seed),
+  );
   expect(started.ok).toBe(true);
   if (!started.ok) throw new Error("start failed");
   return started.game;
@@ -55,6 +64,14 @@ function holder(current: ElephantGame, label: string): string {
 
 function stealsOf(current: ElephantGame, label: string): number {
   return current.gifts.find((item) => item.label === label)?.steals ?? -1;
+}
+
+function expectStealsFail(current: ElephantGame): void {
+  const before = JSON.stringify(current);
+  for (const gift of current.gifts) {
+    expect(act(current, { kind: "steal", giftId: gift.id }).ok).toBe(false);
+  }
+  expect(JSON.stringify(current)).toBe(before);
 }
 
 describe("white elephant", () => {
@@ -249,5 +266,78 @@ describe("white elephant", () => {
     expect(done.phase.kind).toBe("done");
     expect(parseElephant(JSON.parse(JSON.stringify(done)))).toEqual(done);
     expect(parseElephant({ ok: true })).toBeNull();
+  });
+
+  it("blocks every steal when the limit is 0", () => {
+    let current = game(["Ada", "Bea", "Cal"], { stealLimit: 0, finalSwap: true }, 13);
+    current = open(current, "mug");
+    expectStealsFail(current);
+    current = open(current, "book");
+    expectStealsFail(current);
+    current = open(current, "hat");
+    expect(current.phase.kind).toBe("finalSwap");
+    expectStealsFail(current);
+    const kept = played(act(current, { kind: "keep" }));
+    expect(kept.phase.kind).toBe("done");
+    expect(holder(kept, "mug")).toBe(holder(current, "mug"));
+
+    let plain = game(["Ada", "Bea", "Cal"], { stealLimit: 0, finalSwap: false }, 17);
+    plain = open(plain, "mug");
+    plain = open(plain, "book");
+    plain = open(plain, "hat");
+    expect(plain.phase.kind).toBe("done");
+  });
+
+  it("lets the victim steal the gift straight back when the ban is off", () => {
+    let current = game(["Ada", "Bea", "Cal"], { stealLimit: 3, finalSwap: false, stealBackBan: false }, 2);
+    const names = orderNames(current);
+    current = open(current, "mug");
+    current = steal(current, "mug");
+    expect(holder(current, "mug")).toBe(names[1]);
+    expect(currentName(current)).toBe(names[0]);
+    expect(stealsOf(current, "mug")).toBe(1);
+
+    current = steal(current, "mug");
+    expect(holder(current, "mug")).toBe(names[0]);
+    expect(currentName(current)).toBe(names[1]);
+    expect(stealsOf(current, "mug")).toBe(2);
+    expect(current.phase.kind === "playing" && current.phase.bannedGiftId).toBe(
+      current.gifts.find((item) => item.label === "mug")?.id,
+    );
+  });
+
+  it("loads a save that has no rules, and fills a missing steal-back ban", () => {
+    const opened = open(game(people, { ...DEFAULT_ELEPHANT_RULES }, 14), "mug");
+    expect(opened.rules).toEqual(DEFAULT_ELEPHANT_RULES);
+    const bare = JSON.parse(JSON.stringify(opened));
+    delete bare.rules;
+    expect(parseElephant(bare)).toEqual(opened);
+
+    const custom = open(game(people, { stealLimit: 1, finalSwap: false }, 15), "book");
+    const partial = JSON.parse(JSON.stringify(custom));
+    delete partial.rules.stealBackBan;
+    expect(parseElephant(partial)).toEqual(custom);
+
+    const locked = open(game(people, { stealLimit: 0, finalSwap: false }, 16), "scarf");
+    expect(stealsOf(locked, "scarf")).toBe(0);
+    expect(parseElephant(JSON.parse(JSON.stringify(locked)))).toEqual(locked);
+
+    const over = JSON.parse(JSON.stringify(locked));
+    over.gifts[0].steals = 1;
+    expect(parseElephant(over)).toBeNull();
+
+    const extra = JSON.parse(JSON.stringify(opened));
+    extra.rules.bonus = true;
+    expect(parseElephant(extra)).toBeNull();
+    extra.rules = { stealLimit: 1.5, finalSwap: true, stealBackBan: true };
+    expect(parseElephant(extra)).toBeNull();
+    extra.rules = { stealLimit: 2, finalSwap: "yes", stealBackBan: true };
+    expect(parseElephant(extra)).toBeNull();
+
+    for (const stealLimit of [-1, 10, 1.5]) {
+      const started = startElephant(people, { stealLimit, stealBackBan: true, finalSwap: true }, mulberry32(1));
+      expect(started.ok).toBe(false);
+      if (!started.ok) expect(started.reason).toBe("Set the steal limit from 0 to 9.");
+    }
   });
 });

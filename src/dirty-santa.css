@@ -71,16 +71,24 @@ ol.turn-order ::marker {
   gap: 0.5rem;
 }
 
-.choice {
+.rules {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.85rem;
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  list-style: none;
+  border: 1px solid rgb(240 200 75 / 38%);
+  border-radius: 0.7rem;
+  background: var(--holly-deep);
+  color: var(--cream);
+  font-size: 0.92rem;
 }
 
-.choice input {
-  width: 1.15rem;
-  min-height: 1.15rem;
+.rules li {
+  margin: 0;
   padding: 0;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 47.99rem) {
