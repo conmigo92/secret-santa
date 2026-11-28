@@ -1,0 +1,18 @@
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.site-nav a {
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--cream);
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
