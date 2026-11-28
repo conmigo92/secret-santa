@@ -27,23 +27,43 @@ export function mountHub(root: HTMLElement): void {
     );
   }
 
-  const shell = el("main", { className: "shell hub" }, [
-    el("div", { className: "game-box" }, [
-      el("div", { className: "lid-window", attrs: { "aria-hidden": "true" } }, [
-        el("div", { className: "box-lid" }, [bowMark()]),
+  const shake = el("div", { className: "box-shake" }, [
+    el("div", { className: "box-body" }, [
+      el("header", { className: "mast" }, [
+        el("h1", { text: SITE_NAME }),
+        el("p", {
+          className: "lede",
+          text: "Pick a game and play in this browser. Nobody needs an account.",
+        }),
       ]),
-      el("div", { className: "box-body" }, [
-        el("header", { className: "mast" }, [
-          el("h1", { text: SITE_NAME }),
-          el("p", {
-            className: "lede",
-            text: "Pick a game and play in this browser. Nobody needs an account.",
-          }),
-        ]),
-        cards,
-      ]),
+      cards,
+    ]),
+    el("div", { className: "lid-window", attrs: { "aria-hidden": "true" } }, [
+      el("div", { className: "box-lid" }, [bowMark()]),
     ]),
   ]);
+  const replay = el("button", {
+    className: "ghost replay",
+    text: "Open again",
+    attrs: { type: "button" },
+  });
+  replay.addEventListener("click", () => {
+    restartOpen(shake);
+  });
+
+  const shell = el("main", { className: "shell hub" }, [
+    el("div", { className: "game-box" }, [
+      el("div", { className: "box-clip" }, [shake]),
+      replay,
+    ]),
+  ]);
+  restartOpen(shake);
   mountSiteNav(shell);
   root.replaceChildren(shell);
+}
+
+function restartOpen(shake: HTMLElement): void {
+  shake.classList.remove("is-opening");
+  void shake.offsetWidth;
+  shake.classList.add("is-opening");
 }
