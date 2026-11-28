@@ -6,7 +6,7 @@ There is no server and no account. The match is stored in the link's URL fragmen
 
 ## White Elephant
 
-Open White Elephant from the games nav. Add the players on one shared screen, then set the steal limit, the steal-back ban, and whether player 1 gets a final swap. The page shuffles a turn order. On a turn, open a gift and type what it was, or steal an opened gift. A steal limit of 0 means no stealing. Otherwise a gift locks after that many steals. With the ban on, the person who lost a gift cannot take that same gift straight back. Those rules stay on screen during the game. The game stays in this browser until you start a new one.
+Open White Elephant from the games nav. Add the players on one shared screen, then set the steal limit, the steal-back switch, and whether player 1 gets a final swap. The page shuffles a turn order. On a turn, open a gift and type what it was, or steal an opened gift. A steal limit of 0 means no stealing. Otherwise a gift locks after that many steals. With the steal-back switch on, the person who lost a gift cannot take that same gift straight back. Those rules stay on screen during the game. The game stays in this browser until you start a new one.
 
 ## Run
 

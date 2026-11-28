@@ -153,7 +153,7 @@ export function mountDirtySanta(root: HTMLElement): void {
         names,
         {
           durationMs: minutesToDurationMs(Number(minutes.value)),
-          round2: Number(rounds.value) > 1,
+          round2: Number(rounds.value) === DICE_SETTINGS.rounds.max,
           faces: map,
         },
         Date.now(),
@@ -487,9 +487,8 @@ function isEffect(value: unknown): value is FaceEffect {
 }
 
 function randomFace(): Face {
-  const value = 1 + Math.floor(Math.random() * 6);
-  if (value === 1 || value === 2 || value === 3 || value === 4 || value === 5 || value === 6) return value;
-  return 1;
+  const face = DICE_FACES[Math.floor(Math.random() * DICE_FACES.length)];
+  return face ?? DICE_FACES[0];
 }
 
 function sentence(effect: FaceEffect, name: string, other: string): string {
@@ -507,14 +506,12 @@ function resetFacesButton(onReset: () => void): HTMLButtonElement {
   return button;
 }
 
-function activeRules(game: DiceGame): HTMLElement {
+function activeRules(game: DiceGame): HTMLUListElement {
   const minutes = Math.round((game.timer.durationMs / DICE_SETTINGS.msPerMinute) * 100) / 100;
-  const length = minutes === 1 ? "1 minute" : `${minutes} minutes`;
+  const length = `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
   const count = game.round2 ? DICE_SETTINGS.rounds.max : DICE_SETTINGS.rounds.min;
-  const rounds = count === 1 ? "1 round" : `${count} rounds`;
-  const list = el("ul", { className: "rules" });
-  list.append(el("li", { text: length }), el("li", { text: rounds }));
-  return el("div", {}, [el("h2", { text: "House rules" }), list]);
+  const rounds = `${count} ${count === 1 ? "round" : "rounds"}`;
+  return el("ul", { className: "rules" }, [el("li", { text: length }), el("li", { text: rounds })]);
 }
 
 function legend(game: DiceGame): HTMLElement {

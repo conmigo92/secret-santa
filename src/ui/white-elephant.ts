@@ -177,9 +177,9 @@ export function mountWhiteElephant(root: HTMLElement): void {
     }
 
     const body: HTMLElement[] = [
+      rulesList(current),
       el("h2", { text: "Turn order" }),
       orderList,
-      rulesList(current),
       el("h2", { text: heading(current) }),
       message(error),
     ];
@@ -333,14 +333,15 @@ function header(): HTMLElement {
   ]);
 }
 
-function rulesList(current: ElephantGame): HTMLElement {
+function rulesList(current: ElephantGame): HTMLUListElement {
   const rules = current.rules;
-  const limit = rules.stealLimit === 0 ? "No stealing" : `Steal limit ${rules.stealLimit}`;
+  const limit =
+    rules.stealLimit === ELEPHANT_SETTINGS.stealLimit.min
+      ? "No stealing"
+      : `Steal limit ${rules.stealLimit}`;
   const ban = rules.stealBackBan ? "No steal-backs" : "Steal-backs allowed";
   const swap = rules.finalSwap ? "Player 1 gets a final swap" : "No final swap";
-  const list = el("ul", { className: "rules" });
-  for (const line of [limit, ban, swap]) list.append(el("li", { text: line }));
-  return el("div", {}, [el("h2", { text: "House rules" }), list]);
+  return el("ul", { className: "rules" }, [el("li", { text: limit }), el("li", { text: ban }), el("li", { text: swap })]);
 }
 
 function heading(current: ElephantGame): string {
