@@ -1,0 +1,81 @@
+.shell.party {
+  width: min(100% - 1.25rem, 52rem);
+}
+
+.shell.party button {
+  min-height: 2.85rem;
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-weight: 600;
+}
+
+.choice input {
+  width: 1.15rem;
+  height: 1.15rem;
+  min-height: 0;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  flex: none;
+  accent-color: var(--gold);
+}
+
+.choice span {
+  min-width: 0;
+}
+
+.open-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+ol.turn-order {
+  list-style: decimal;
+  margin: 0.2rem 0 0;
+  padding-left: 1.6rem;
+}
+
+ol.turn-order ::marker {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.turn-order li {
+  overflow-wrap: anywhere;
+  padding: 0.2rem 0;
+}
+
+.shell.party .rows li > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.gift-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.gift-line span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  color: var(--gold);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.end-game {
+  margin-top: 0.6rem;
+}

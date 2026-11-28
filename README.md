@@ -4,6 +4,10 @@ A static page for drawing Secret Santa names. The organizer adds participants, m
 
 There is no server and no account. The match is stored in the link's URL fragment, lightly obfuscated so it is not plain text. One link does not include anyone else's match. Opening it only needs the page itself, so the built site can be hosted on GitHub Pages.
 
+## White Elephant
+
+Open White Elephant from the games nav. Add the players on one shared screen. The page shuffles a turn order. On a turn, open a gift and type what it was, or steal an opened gift. The person who lost the gift goes next and cannot take that same gift straight back. A gift locks after three steals. You can change that limit. Player 1 can take a final swap, and you can turn that rule off. The game stays in this browser until you start a new one.
+
 ## Run
 
 ```bash
