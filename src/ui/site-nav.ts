@@ -26,6 +26,12 @@ export function gameLinks(): GameLink[] {
   return links;
 }
 
+const guides: Record<string, string> = {
+  "": "how-to/secret-santa/",
+  "white-elephant/": "how-to/white-elephant/",
+  "dirty-santa/": "how-to/dirty-santa/",
+};
+
 export function mountSiteNav(parent: HTMLElement): void {
   const nav = el("nav", { className: "site-nav", attrs: { "aria-label": "Games" } });
   const base = import.meta.env.BASE_URL;
@@ -35,7 +41,22 @@ export function mountSiteNav(parent: HTMLElement): void {
     if (link.href === here) anchor.setAttribute("aria-current", "page");
     nav.append(anchor);
   }
+  const guide = guideHref(here);
+  if (guide) {
+    const anchor = el("a", {
+      className: "guide-link",
+      text: "How to play",
+      attrs: { href: `${base}${guide}` },
+    });
+    if (guide === here) anchor.setAttribute("aria-current", "page");
+    nav.append(anchor);
+  }
   parent.prepend(nav);
+}
+
+function guideHref(here: string): string | null {
+  if (here.startsWith("how-to/")) return here;
+  return guides[here] ?? null;
 }
 
 function currentPage(): string {

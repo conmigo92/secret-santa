@@ -11,6 +11,11 @@
   text-decoration: none;
 }
 
+.site-nav a.guide-link {
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
 .site-nav a[aria-current="page"] {
   color: var(--cream);
   text-decoration: underline;
