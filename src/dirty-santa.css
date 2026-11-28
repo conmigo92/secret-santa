@@ -1,0 +1,102 @@
+.shell.party {
+  width: min(100% - 1.25rem, 52rem);
+}
+
+ol.turn-order {
+  list-style: decimal;
+  padding-left: 1.6rem;
+}
+
+ol.turn-order ::marker {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.timer {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(3rem, 12vw, 5rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.die-face {
+  margin: 0;
+  color: var(--gold);
+  font-family: "Mountains of Christmas", "Figtree", sans-serif;
+  font-size: 4.5rem;
+  line-height: 0.9;
+}
+
+.face-grid {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.board {
+  position: relative;
+  min-height: 24rem;
+  margin: 0.4rem 0 1rem;
+}
+
+.board .seat {
+  position: absolute;
+  width: 9.5rem;
+  transform: translate(-50%, -50%);
+}
+
+.holding {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 0.4rem 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.seat {
+  border: 1px solid rgb(240 200 75 / 38%);
+  border-radius: 0.7rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--holly-deep);
+}
+
+.seat.current {
+  outline: 2px solid var(--gold);
+}
+
+.view-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.choice input {
+  width: 1.15rem;
+  min-height: 1.15rem;
+  padding: 0;
+}
+
+@media (max-width: 47.99rem) {
+  .board {
+    min-height: 20rem;
+  }
+
+  .board .seat {
+    width: 6.6rem;
+    padding: 0.4rem 0.45rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (min-width: 40rem) {
+  .face-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
