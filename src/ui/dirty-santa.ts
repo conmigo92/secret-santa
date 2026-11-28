@@ -2,7 +2,10 @@ import { christmasCountdown } from "../domain/calendar";
 import { normalizeName } from "../domain/participants";
 import {
   chooseSwap,
-  DEFAULT_FACE_MAP,
+  DICE_FACES,
+  DICE_SETTINGS,
+  FACE_EFFECTS,
+  minutesToDurationMs,
   parseDice,
   pause,
   resume,
@@ -20,8 +23,6 @@ import { el, hollyMark } from "./dom";
 import { mountSiteNav } from "./site-nav";
 
 const KEY = "secret-santa.dirty-santa";
-const FACES: Face[] = [1, 2, 3, 4, 5, 6];
-const EFFECTS: FaceEffect[] = ["passLeft", "passRight", "swapAny", "allLeft", "allRight", "keep"];
 const EFFECT_LABEL: Record<FaceEffect, string> = {
   passLeft: "Pass your gift left",
   passRight: "Pass your gift right",
@@ -34,9 +35,9 @@ const EFFECT_LABEL: Record<FaceEffect, string> = {
 export function mountDirtySanta(root: HTMLElement): void {
   let game = load();
   let names: string[] = [];
-  let minutesValue = "3";
-  let round2On = false;
-  let faceChoices: FaceMap = { ...DEFAULT_FACE_MAP };
+  let minutesValue = String(DICE_SETTINGS.minutes.default);
+  let roundsValue = String(DICE_SETTINGS.rounds.default);
+  let faceChoices: FaceMap = { ...DICE_SETTINGS.faces };
   let armed = false;
   let error = "";
   let view: "circle" | "list" = window.matchMedia("(min-width: 48rem)").matches ? "circle" : "list";
@@ -62,19 +63,23 @@ export function mountDirtySanta(root: HTMLElement): void {
         id: "minutes",
         name: "minutes",
         type: "number",
-        min: "0.25",
-        max: "30",
-        step: "0.25",
+        min: String(DICE_SETTINGS.minutes.min),
+        max: String(DICE_SETTINGS.minutes.max),
+        step: String(DICE_SETTINGS.minutes.step),
         value: minutesValue,
       },
     });
     minutes.addEventListener("input", () => {
       minutesValue = minutes.value;
     });
-    const round2 = el("input", { attrs: { id: "round-2", type: "checkbox" } });
-    round2.checked = round2On;
-    round2.addEventListener("change", () => {
-      round2On = round2.checked;
+    const rounds = el("select", { attrs: { id: "rounds", name: "rounds" } });
+    for (let round = DICE_SETTINGS.rounds.min; round <= DICE_SETTINGS.rounds.max; round += 1) {
+      const option = el("option", { text: String(round), attrs: { value: String(round) } });
+      if (String(round) === roundsValue) option.selected = true;
+      rounds.append(option);
+    }
+    rounds.addEventListener("change", () => {
+      roundsValue = rounds.value;
     });
     const list = el("ol", { className: "rows turn-order" });
     names.forEach((name, index) => {
@@ -128,7 +133,7 @@ export function mountDirtySanta(root: HTMLElement): void {
     });
 
     const faces = el("div", { className: "face-grid" });
-    for (const face of FACES) {
+    for (const face of DICE_FACES) {
       faces.append(
         faceField(face, faceChoices[face], (effect) => {
           faceChoices = { ...faceChoices, [face]: effect };
@@ -146,7 +151,11 @@ export function mountDirtySanta(root: HTMLElement): void {
       }
       const started = startDice(
         names,
-        { durationMs: Math.round(Number(minutes.value) * 60_000), round2: round2.checked, faces: map },
+        {
+          durationMs: minutesToDurationMs(Number(minutes.value)),
+          round2: Number(rounds.value) > 1,
+          faces: map,
+        },
         Date.now(),
       );
       if (!started.ok) {
@@ -168,11 +177,18 @@ export function mountDirtySanta(root: HTMLElement): void {
       el("div", { className: "field" }, [
         el("label", { text: "Minutes", attrs: { for: "minutes" } }),
         minutes,
-        el("p", { className: "quiet", text: "The round lasts this long. 3 is the usual length." }),
+        el("p", {
+          className: "quiet",
+          text: `The round lasts this long. ${DICE_SETTINGS.minutes.default} is the usual length.`,
+        }),
       ]),
-      el("label", { className: "choice" }, [round2, el("span", { text: "Second round after unwrapping" })]),
+      el("div", { className: "field" }, [el("label", { text: "Rounds", attrs: { for: "rounds" } }), rounds]),
       el("h2", { text: "Die faces" }),
       faces,
+      resetFacesButton(() => {
+        faceChoices = { ...DICE_SETTINGS.faces };
+        draw();
+      }),
       start,
     ]);
     mountSiteNav(shell);
@@ -183,7 +199,13 @@ export function mountDirtySanta(root: HTMLElement): void {
   function drawPlay(): void {
     if (!game) return;
     const current = game;
-    const parts: HTMLElement[] = [timerBlock(current), legend(current), viewSwitch(), seats(current)];
+    const parts: HTMLElement[] = [
+      timerBlock(current),
+      activeRules(current),
+      legend(current),
+      viewSwitch(),
+      seats(current),
+    ];
 
     if (lastFace !== null) {
       parts.push(el("p", { className: "die-face", text: String(lastFace) }));
@@ -431,7 +453,7 @@ export function mountDirtySanta(root: HTMLElement): void {
 
 function faceField(face: Face, selected: FaceEffect, onChange: (effect: FaceEffect) => void): HTMLElement {
   const select = el("select", { attrs: { id: `face-${face}` } });
-  for (const effect of EFFECTS) {
+  for (const effect of FACE_EFFECTS) {
     const option = el("option", { text: EFFECT_LABEL[effect], attrs: { value: effect } });
     if (effect === selected) option.selected = true;
     select.append(option);
@@ -447,7 +469,7 @@ function faceField(face: Face, selected: FaceEffect, onChange: (effect: FaceEffe
 
 function readMap(): FaceMap | null {
   const map: Partial<FaceMap> = {};
-  for (const face of FACES) {
+  for (const face of DICE_FACES) {
     const select = document.getElementById(`face-${face}`);
     if (!(select instanceof HTMLSelectElement) || !isEffect(select.value)) return null;
     map[face] = select.value;
@@ -457,11 +479,11 @@ function readMap(): FaceMap | null {
 }
 
 function isComplete(map: Partial<FaceMap>): map is FaceMap {
-  return FACES.every((face) => isEffect(map[face]));
+  return DICE_FACES.every((face) => isEffect(map[face]));
 }
 
 function isEffect(value: unknown): value is FaceEffect {
-  return typeof value === "string" && EFFECTS.some((effect) => effect === value);
+  return typeof value === "string" && FACE_EFFECTS.some((effect) => effect === value);
 }
 
 function randomFace(): Face {
@@ -479,9 +501,25 @@ function sentence(effect: FaceEffect, name: string, other: string): string {
   return `${name} swaps with ${other}.`;
 }
 
+function resetFacesButton(onReset: () => void): HTMLButtonElement {
+  const button = el("button", { className: "ghost", text: "Reset faces", attrs: { type: "button" } });
+  button.addEventListener("click", onReset);
+  return button;
+}
+
+function activeRules(game: DiceGame): HTMLElement {
+  const minutes = Math.round((game.timer.durationMs / DICE_SETTINGS.msPerMinute) * 100) / 100;
+  const length = minutes === 1 ? "1 minute" : `${minutes} minutes`;
+  const count = game.round2 ? DICE_SETTINGS.rounds.max : DICE_SETTINGS.rounds.min;
+  const rounds = count === 1 ? "1 round" : `${count} rounds`;
+  const list = el("ul", { className: "rules" });
+  list.append(el("li", { text: length }), el("li", { text: rounds }));
+  return el("div", {}, [el("h2", { text: "House rules" }), list]);
+}
+
 function legend(game: DiceGame): HTMLElement {
   const list = el("ul", { className: "rows" });
-  for (const face of FACES) {
+  for (const face of DICE_FACES) {
     list.append(el("li", { text: `${face}. ${EFFECT_LABEL[game.faces[face]]}` }));
   }
   return el("div", {}, [el("h2", { text: "Die faces" }), list]);

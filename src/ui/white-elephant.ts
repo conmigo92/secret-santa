@@ -2,6 +2,8 @@ import { christmasCountdown } from "../domain/calendar";
 import { normalizeName } from "../domain/participants";
 import {
   act,
+  DEFAULT_ELEPHANT_RULES,
+  ELEPHANT_SETTINGS,
   parseElephant,
   startElephant,
   type ElephantAction,
@@ -17,8 +19,9 @@ export function mountWhiteElephant(root: HTMLElement): void {
   let game = load();
   let names: string[] = [];
   let nameDraft = "";
-  let limitValue = "3";
-  let finalSwapOn = true;
+  let limitValue = String(DEFAULT_ELEPHANT_RULES.stealLimit);
+  let stealBackOn = DEFAULT_ELEPHANT_RULES.stealBackBan;
+  let finalSwapOn = DEFAULT_ELEPHANT_RULES.finalSwap;
   let labelDraft = "";
   let armed = false;
   let error = "";
@@ -51,8 +54,8 @@ export function mountWhiteElephant(root: HTMLElement): void {
         id: "steal-limit",
         name: "steal-limit",
         type: "number",
-        min: "1",
-        max: "9",
+        min: String(ELEPHANT_SETTINGS.stealLimit.min),
+        max: String(ELEPHANT_SETTINGS.stealLimit.max),
         step: "1",
         inputmode: "numeric",
       },
@@ -60,6 +63,12 @@ export function mountWhiteElephant(root: HTMLElement): void {
     limitInput.value = limitValue;
     limitInput.addEventListener("input", () => {
       limitValue = limitInput.value;
+    });
+
+    const stealBack = el("input", { attrs: { id: "steal-back", type: "checkbox" } });
+    stealBack.checked = stealBackOn;
+    stealBack.addEventListener("change", () => {
+      stealBackOn = stealBack.checked;
     });
 
     const finalSwap = el("input", { attrs: { id: "final-swap", type: "checkbox" } });
@@ -114,9 +123,14 @@ export function mountWhiteElephant(root: HTMLElement): void {
 
     const start = el("button", { className: "primary draw", text: "Start game", attrs: { type: "button" } });
     start.addEventListener("click", () => {
+      const limitText = limitInput.value.trim();
       const started = startElephant(
         names,
-        { stealLimit: Number(limitInput.value), finalSwap: finalSwap.checked },
+        {
+          stealLimit: limitText === "" ? Number.NaN : Number(limitText),
+          stealBackBan: stealBack.checked,
+          finalSwap: finalSwap.checked,
+        },
         Math.random,
       );
       if (!started.ok) {
@@ -138,7 +152,14 @@ export function mountWhiteElephant(root: HTMLElement): void {
         el("div", { className: "field" }, [
           el("label", { text: "Steal limit", attrs: { for: "steal-limit" } }),
           limitInput,
-          el("p", { className: "quiet", text: "A gift locks after this many steals." }),
+          el("p", {
+            className: "quiet",
+            text: "0 means no stealing. Any other number locks a gift after that many steals.",
+          }),
+        ]),
+        el("label", { className: "choice" }, [
+          stealBack,
+          el("span", { text: "No stealing a gift straight back" }),
         ]),
         el("label", { className: "choice" }, [finalSwap, el("span", { text: "Player 1 gets a final swap" })]),
         start,
@@ -158,6 +179,7 @@ export function mountWhiteElephant(root: HTMLElement): void {
     const body: HTMLElement[] = [
       el("h2", { text: "Turn order" }),
       orderList,
+      rulesList(current),
       el("h2", { text: heading(current) }),
       message(error),
     ];
@@ -234,7 +256,7 @@ export function mountWhiteElephant(root: HTMLElement): void {
       return el("li", {}, [row]);
     }
     const locked = gift.steals >= current.rules.stealLimit;
-    const banned = phase.kind === "playing" && phase.bannedGiftId === gift.id;
+    const banned = current.rules.stealBackBan && phase.kind === "playing" && phase.bannedGiftId === gift.id;
     if (locked) row.append(el("span", { className: "badge", text: "Locked" }));
     else if (banned) row.append(el("span", { className: "quiet", text: "Can't take this one back" }));
     else {
@@ -280,8 +302,9 @@ export function mountWhiteElephant(root: HTMLElement): void {
       names = [];
       nameDraft = "";
       labelDraft = "";
-      limitValue = "3";
-      finalSwapOn = true;
+      limitValue = String(DEFAULT_ELEPHANT_RULES.stealLimit);
+      stealBackOn = DEFAULT_ELEPHANT_RULES.stealBackBan;
+      finalSwapOn = DEFAULT_ELEPHANT_RULES.finalSwap;
       armed = false;
       error = "";
       draw();
@@ -308,6 +331,16 @@ function header(): HTMLElement {
     }),
     el("p", { className: "countdown", text: christmasCountdown(new Date()) }),
   ]);
+}
+
+function rulesList(current: ElephantGame): HTMLElement {
+  const rules = current.rules;
+  const limit = rules.stealLimit === 0 ? "No stealing" : `Steal limit ${rules.stealLimit}`;
+  const ban = rules.stealBackBan ? "No steal-backs" : "Steal-backs allowed";
+  const swap = rules.finalSwap ? "Player 1 gets a final swap" : "No final swap";
+  const list = el("ul", { className: "rules" });
+  for (const line of [limit, ban, swap]) list.append(el("li", { text: line }));
+  return el("div", {}, [el("h2", { text: "House rules" }), list]);
 }
 
 function heading(current: ElephantGame): string {

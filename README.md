@@ -6,7 +6,7 @@ There is no server and no account. The match is stored in the link's URL fragmen
 
 ## White Elephant
 
-Open White Elephant from the games nav. Add the players on one shared screen. The page shuffles a turn order. On a turn, open a gift and type what it was, or steal an opened gift. The person who lost the gift goes next and cannot take that same gift straight back. A gift locks after three steals. You can change that limit. Player 1 can take a final swap, and you can turn that rule off. The game stays in this browser until you start a new one.
+Open White Elephant from the games nav. Add the players on one shared screen, then set the steal limit, the steal-back ban, and whether player 1 gets a final swap. The page shuffles a turn order. On a turn, open a gift and type what it was, or steal an opened gift. A steal limit of 0 means no stealing. Otherwise a gift locks after that many steals. With the ban on, the person who lost a gift cannot take that same gift straight back. Those rules stay on screen during the game. The game stays in this browser until you start a new one.
 
 ## Run
 
@@ -26,4 +26,4 @@ Vite's base is `/secret-santa/`. A private link copied from the deployed site is
 
 ## Dirty Santa
 
-Open Dirty Santa from the games nav. Enter names in seat order. Left is the next name, and the last seat's left is the first name. Everyone starts with a wrapped gift. Roll the on-screen die. You can change what each face does before the round starts. A countdown ends the round, and you can pause it. A second round after unwrapping is optional. The game stays in this browser until you start a new one.
+Open Dirty Santa from the games nav. Enter names in seat order. Left is the next name, and the last seat's left is the first name. Set the timer in minutes, choose 1 or 2 rounds, and set what each die face does. Reset faces puts the die back to the usual actions. Everyone starts with a wrapped gift. Roll the on-screen die. A countdown ends the round, and you can pause it. The timer, the round count, and the faces stay on screen during the game. The game stays in this browser until you start a new one.
