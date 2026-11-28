@@ -49,3 +49,7 @@ Open Holiday Bingo from the home page or the games nav. The host makes one card 
 ## Would You Rather
 
 Open Would You Rather from the home page or the games nav. The prompts are shuffled. Read both sides, tap once for each raised hand, and use Minus if you counted one too many. Next clears that tally. Shuffle again starts a new order. The place in the pile stays in this browser.
+
+## Most Likely To
+
+Open Most Likely To from the home page or the games nav. The host adds the names and sets how many awards to give. Pass the phone. Each person picks someone for that prompt. After the last vote, the page lists the titles each person won. A tie gives the title to everyone who tied. The awards stay in this browser until you start new ones.
