@@ -45,3 +45,7 @@ Open Ugly Sweater from the home page or the games nav. The host adds the contest
 ## Holiday Bingo
 
 Open Holiday Bingo from the home page or the games nav. The host makes one card per player. Each card is a link with the card seed in the fragment, and the center square is free. A player opens that link, taps a square when it happens, and the page calls bingo on a full line. The same link always opens the same card. Marks stay in that browser.
+
+## Would You Rather
+
+Open Would You Rather from the home page or the games nav. The prompts are shuffled. Read both sides, tap once for each raised hand, and use Minus if you counted one too many. Next clears that tally. Shuffle again starts a new order. The place in the pile stays in this browser.
