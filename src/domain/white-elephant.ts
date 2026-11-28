@@ -3,8 +3,21 @@ import type { Rng } from "./types";
 
 export interface ElephantRules {
   stealLimit: number;
+  stealBackBan: boolean;
   finalSwap: boolean;
 }
+
+export const ELEPHANT_SETTINGS = {
+  stealLimit: { min: 0, max: 9, default: 3 },
+  stealBackBan: { default: true },
+  finalSwap: { default: true },
+} as const;
+
+export const DEFAULT_ELEPHANT_RULES: ElephantRules = {
+  stealLimit: ELEPHANT_SETTINGS.stealLimit.default,
+  stealBackBan: ELEPHANT_SETTINGS.stealBackBan.default,
+  finalSwap: ELEPHANT_SETTINGS.finalSwap.default,
+};
 
 export interface ElephantPlayer {
   id: string;
@@ -50,8 +63,9 @@ export function startElephant(
 ): ElephantResult {
   const cleaned = cleanedNames(names);
   if (!cleaned.ok) return cleaned;
-  if (!Number.isInteger(rules.stealLimit) || rules.stealLimit < 1 || rules.stealLimit > 9) {
-    return { ok: false, reason: "Set the steal limit from 1 to 9." };
+  const { min, max } = ELEPHANT_SETTINGS.stealLimit;
+  if (!Number.isInteger(rules.stealLimit) || rules.stealLimit < min || rules.stealLimit > max) {
+    return { ok: false, reason: `Set the steal limit from ${min} to ${max}.` };
   }
 
   const players = shuffle(cleaned.names, rng).map((name, index) => ({
@@ -65,7 +79,11 @@ export function startElephant(
     game: {
       players,
       gifts: [],
-      rules: { stealLimit: rules.stealLimit, finalSwap: rules.finalSwap },
+      rules: {
+        stealLimit: rules.stealLimit,
+        stealBackBan: rules.stealBackBan,
+        finalSwap: rules.finalSwap,
+      },
       phase: { kind: "playing", currentId: players[0].id, bannedGiftId: null, nextOrder: 1 },
     },
   };
@@ -88,10 +106,10 @@ export function act(game: ElephantGame, action: ElephantAction): ElephantResult 
 }
 
 export function parseElephant(data: unknown): ElephantGame | null {
-  if (!isRecord(data) || !exactKeys(data, ["players", "gifts", "rules", "phase"])) return null;
+  if (!isRecord(data) || !gameKeys(data)) return null;
   const players = parsePlayers(data.players);
   const gifts = parseGifts(data.gifts);
-  const rules = parseRules(data.rules);
+  const rules = parseRules(Object.prototype.hasOwnProperty.call(data, "rules") ? data.rules : undefined);
   if (!players || !gifts || !rules) return null;
   if (players.length < 2 || !ordersAreSequence(players) || duplicateName(players)) return null;
 
@@ -169,7 +187,9 @@ function steal(game: ElephantGame, giftId: string): ElephantResult {
 }
 
 function stealWhilePlaying(game: ElephantGame, phase: Playing, gift: ElephantGift): ElephantResult {
-  if (gift.id === phase.bannedGiftId) return { ok: false, reason: "You can't steal that gift back." };
+  if (game.rules.stealBackBan && gift.id === phase.bannedGiftId) {
+    return { ok: false, reason: "You can't steal that gift back." };
+  }
   if (gift.holderId === phase.currentId) return { ok: false, reason: "You already hold that gift." };
   const gifts = game.gifts.map((item) =>
     item.id === gift.id ? { ...item, holderId: phase.currentId, steals: item.steals + 1 } : item,
@@ -201,7 +221,11 @@ function nextGame(game: ElephantGame, gifts: readonly ElephantGift[], phase: Ele
   return {
     players: game.players.map((player) => ({ ...player })),
     gifts: gifts.map((gift) => ({ ...gift })),
-    rules: { stealLimit: game.rules.stealLimit, finalSwap: game.rules.finalSwap },
+    rules: {
+      stealLimit: game.rules.stealLimit,
+      stealBackBan: game.rules.stealBackBan,
+      finalSwap: game.rules.finalSwap,
+    },
     phase,
   };
 }
@@ -264,11 +288,31 @@ function parseGifts(value: unknown): ElephantGift[] | null {
 }
 
 function parseRules(value: unknown): ElephantRules | null {
-  if (!isRecord(value) || !exactKeys(value, ["stealLimit", "finalSwap"])) return null;
-  if (typeof value.stealLimit !== "number" || !Number.isInteger(value.stealLimit)) return null;
-  if (value.stealLimit < 1 || value.stealLimit > 9) return null;
-  if (typeof value.finalSwap !== "boolean") return null;
-  return { stealLimit: value.stealLimit, finalSwap: value.finalSwap };
+  if (value === undefined) return { ...DEFAULT_ELEPHANT_RULES };
+  if (!isRecord(value)) return null;
+  const allowed = ["stealLimit", "finalSwap", "stealBackBan"];
+  if (Object.keys(value).some((key) => !allowed.includes(key))) return null;
+  const stealLimit = fieldOr(value, "stealLimit", DEFAULT_ELEPHANT_RULES.stealLimit);
+  const finalSwap = fieldOr(value, "finalSwap", DEFAULT_ELEPHANT_RULES.finalSwap);
+  const stealBackBan = fieldOr(value, "stealBackBan", DEFAULT_ELEPHANT_RULES.stealBackBan);
+  const { min, max } = ELEPHANT_SETTINGS.stealLimit;
+  if (typeof stealLimit !== "number" || !Number.isInteger(stealLimit) || stealLimit < min || stealLimit > max) {
+    return null;
+  }
+  if (typeof finalSwap !== "boolean" || typeof stealBackBan !== "boolean") return null;
+  return { stealLimit, stealBackBan, finalSwap };
+}
+
+function fieldOr(value: Record<string, unknown>, key: string, fallback: unknown): unknown {
+  return Object.prototype.hasOwnProperty.call(value, key) ? value[key] : fallback;
+}
+
+function gameKeys(value: Record<string, unknown>): boolean {
+  const allowed = ["players", "gifts", "rules", "phase"];
+  const required = ["players", "gifts", "phase"];
+  const present = Object.keys(value);
+  if (present.some((key) => !allowed.includes(key))) return false;
+  return required.every((key) => Object.prototype.hasOwnProperty.call(value, key));
 }
 
 function parsePhase(value: unknown, playerIds: Set<string>, giftIds: Set<string>): ElephantPhase | null {
