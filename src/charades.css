@@ -1,0 +1,90 @@
+.shell.party {
+  width: min(100% - 1.25rem, 52rem);
+}
+
+.shell.party .rows li > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mode-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mode-row button {
+  flex: 1 1 8rem;
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-weight: 600;
+}
+
+.choice input {
+  width: 1.15rem;
+  height: 1.15rem;
+  min-height: 0;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  flex: none;
+  accent-color: var(--gold);
+}
+
+.timer {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(2.4rem, 10vw, 4rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.timer.is-up {
+  color: var(--cranberry-hot);
+}
+
+.secret-word {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(2rem, 8vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.score-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.85rem;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.score-row li {
+  margin: 0;
+  color: var(--gold);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+ol.turn-order {
+  list-style: decimal;
+  margin: 0.2rem 0 0;
+  padding-left: 1.6rem;
+}
+
+ol.turn-order ::marker {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.turn-order li {
+  overflow-wrap: anywhere;
+  padding: 0.2rem 0;
+}

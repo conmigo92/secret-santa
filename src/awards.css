@@ -1,0 +1,28 @@
+.shell.party {
+  width: min(100% - 1.25rem, 40rem);
+}
+
+.shell.party .rows li > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.point-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.point-row button {
+  width: 100%;
+}
+
+.winner {
+  margin: 0.15rem 0 0;
+  color: var(--gold);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
