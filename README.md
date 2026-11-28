@@ -19,3 +19,7 @@ npm run dev
 Pushes to `main` build and deploy to [https://conmigo92.github.io/secret-santa/](https://conmigo92.github.io/secret-santa/). In the repository settings, GitHub Pages has to use the **GitHub Actions** source before that workflow can publish.
 
 Vite's base is `/secret-santa/`. A private link copied from the deployed site is an absolute URL on that host, with the match in the fragment (`https://conmigo92.github.io/secret-santa/#…`). Drawing again creates new links; a link you already sent still opens the previous match.
+
+## Dirty Santa
+
+Open Dirty Santa from the games nav. Enter names in seat order. Left is the next name, and the last seat's left is the first name. Everyone starts with a wrapped gift. Roll the on-screen die. You can change what each face does before the round starts. A countdown ends the round, and you can pause it. A second round after unwrapping is optional. The game stays in this browser until you start a new one.
