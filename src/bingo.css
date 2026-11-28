@@ -1,0 +1,72 @@
+.shell.party {
+  width: min(100% - 1.25rem, 40rem);
+}
+
+.bingo-call {
+  margin: 0.8rem 0 0;
+  color: var(--gold);
+  font-family: "Mountains of Christmas", "Figtree", sans-serif;
+  font-size: clamp(2.4rem, 10vw, 4rem);
+  line-height: 1.2;
+}
+
+.bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-top: 0.8rem;
+}
+
+.bingo-grid button {
+  min-height: 4.4rem;
+  padding: 0.35rem;
+  border: 1px solid rgb(240 200 75 / 38%);
+  background: var(--holly-deep);
+  color: var(--cream);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  overflow-wrap: break-word;
+  box-shadow: none;
+}
+
+.bingo-grid button.marked {
+  background: var(--cranberry);
+  border-color: var(--gold);
+  color: var(--cream);
+}
+
+.bingo-grid button.on-line {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.links input {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+@media print {
+  .snow,
+  .site-nav,
+  .no-print,
+  .countdown,
+  .lede {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .shell.party {
+    width: auto;
+  }
+
+  .bingo-grid button {
+    border: 1px solid black;
+    color: black;
+    background: white;
+    box-shadow: none;
+  }
+}

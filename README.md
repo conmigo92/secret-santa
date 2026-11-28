@@ -41,3 +41,7 @@ Open Charades from the home page or the games nav. Add two or more teams. Pick c
 ## Ugly Sweater
 
 Open Ugly Sweater from the home page or the games nav. The host adds the contestants. Pass the phone. Each person votes once, in three categories, and cannot vote for themselves. The ballots stay hidden. When everyone has voted, the host reveals the winners. A tie lists every name. The contest stays in this browser until you start a new one.
+
+## Holiday Bingo
+
+Open Holiday Bingo from the home page or the games nav. The host makes one card per player. Each card is a link with the card seed in the fragment, and the center square is free. A player opens that link, taps a square when it happens, and the page calls bingo on a full line. The same link always opens the same card. Marks stay in that browser.
