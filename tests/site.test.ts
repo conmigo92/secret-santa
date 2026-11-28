@@ -10,17 +10,21 @@ describe("game list", () => {
       "Secret Santa",
       "White Elephant",
       "Dirty Santa",
+      "Christmas Trivia",
     ]);
     expect(games.map((game) => game.href)).toEqual([
       "secret-santa/",
       "white-elephant/",
       "dirty-santa/",
+      "trivia/",
     ]);
     expect(games.map((game) => game.guide)).toEqual([
       "how-to/secret-santa/",
       "how-to/white-elephant/",
       "how-to/dirty-santa/",
+      "how-to/trivia/",
     ]);
+    expect(games.map((game) => game.order)).toEqual(games.map((_, index) => index));
     expect(games.every((game) => game.pitch.length > 0)).toBe(true);
   });
 });

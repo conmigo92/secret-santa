@@ -29,3 +29,7 @@ Vite's base is `/secret-santa/`. A private link copied from the deployed site is
 ## Dirty Santa
 
 Open Dirty Santa from the home page or the games nav. Enter names in seat order. Left is the next name, and the last seat's left is the first name. Set the timer in minutes, choose 1 or 2 rounds, and set what each die face does. Reset faces puts the die back to the usual actions. Everyone starts with a wrapped gift. Roll the on-screen die. A countdown ends the round, and you can pause it. The timer, the round count, and the faces stay on screen during the game. The game stays in this browser until you start a new one.
+
+## Christmas Trivia
+
+Open Christmas Trivia from the home page or the games nav. Add players or teams. Set the seconds for each question, and set how many questions to play. The host can add custom questions before the game. Those questions are always included, so the count has to cover them. The page shows a multiple-choice question. Show the answer, give the point to one player or to nobody, then go on. A timer of 0 waits for the host. The scores stay in this browser until you start a new game.
