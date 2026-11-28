@@ -3,10 +3,11 @@ import "@fontsource/figtree/latin-600.css";
 import "@fontsource/mountains-of-christmas/latin-700.css";
 import "./style.css";
 import "./dirty-santa.css";
+import { pageTitle } from "./site";
 import { mountDirtySanta } from "./ui/dirty-santa";
 
 const root = document.querySelector("#app");
 if (!(root instanceof HTMLElement)) throw new Error("Missing #app");
 
-document.title = "Dirty Santa";
+document.title = pageTitle("Dirty Santa");
 mountDirtySanta(root);
