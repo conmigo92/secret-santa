@@ -5,6 +5,7 @@ import { encodeLink, pageUrl } from "../domain/link";
 import { addParticipant } from "../domain/participants";
 import type { Exclusion, LinkPayload, Participant } from "../domain/types";
 import { el, hollyMark } from "./dom";
+import { mountSiteNav } from "./site-nav";
 
 export function mountOrganizer(root: HTMLElement): void {
   let participants: Participant[] = [];
@@ -118,6 +119,7 @@ export function mountOrganizer(root: HTMLElement): void {
     results,
   ]);
 
+  mountSiteNav(shell);
   root.replaceChildren(shell);
 
   personForm.addEventListener("submit", (event) => {
