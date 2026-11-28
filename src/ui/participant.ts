@@ -2,6 +2,7 @@ import { christmasCountdown } from "../domain/calendar";
 import { pageUrl } from "../domain/link";
 import type { LinkPayload } from "../domain/types";
 import { bowMark, el, hollyMark } from "./dom";
+import { mountSiteNav } from "./site-nav";
 
 export function mountParticipant(root: HTMLElement, payload: LinkPayload): void {
   const notes = el("dl", { className: "notes" });
@@ -28,9 +29,11 @@ export function mountParticipant(root: HTMLElement, payload: LinkPayload): void 
   );
 
   const lid = el("div", { className: "lid", attrs: { "aria-hidden": "true" } }, [bowMark()]);
-  root.replaceChildren(
-    el("main", { className: "shell slip" }, [el("article", { className: "gift" }, [present, lid])]),
-  );
+  const shell = el("main", { className: "shell slip" }, [
+    el("article", { className: "gift" }, [present, lid]),
+  ]);
+  mountSiteNav(shell);
+  root.replaceChildren(shell);
 }
 
 export function mountBrokenLink(root: HTMLElement): void {
@@ -39,24 +42,24 @@ export function mountBrokenLink(root: HTMLElement): void {
     text: "Start a draw",
     attrs: { href: homeHref() },
   });
-  root.replaceChildren(
-    el("main", { className: "shell slip" }, [
-      el("article", { className: "gift" }, [
-        el("div", { className: "present" }, [
-          el("div", { className: "ribbon", attrs: { "aria-hidden": "true" } }),
-          bowMark(),
-          hollyMark(),
-          el("h1", { className: "broken", text: "This link doesn't open" }),
-          el("p", {
-            className: "on-gift",
-            text: "The address looks incomplete or out of date. Ask the organizer to send your link again.",
-          }),
-          el("p", { className: "countdown", text: christmasCountdown(new Date()) }),
-          home,
-        ]),
+  const shell = el("main", { className: "shell slip" }, [
+    el("article", { className: "gift" }, [
+      el("div", { className: "present" }, [
+        el("div", { className: "ribbon", attrs: { "aria-hidden": "true" } }),
+        bowMark(),
+        hollyMark(),
+        el("h1", { className: "broken", text: "This link doesn't open" }),
+        el("p", {
+          className: "on-gift",
+          text: "The address looks incomplete or out of date. Ask the organizer to send your link again.",
+        }),
+        el("p", { className: "countdown", text: christmasCountdown(new Date()) }),
+        home,
       ]),
     ]),
-  );
+  ]);
+  mountSiteNav(shell);
+  root.replaceChildren(shell);
 }
 
 function note(label: string, value: string): HTMLDivElement {
@@ -67,5 +70,7 @@ function note(label: string, value: string): HTMLDivElement {
 }
 
 function homeHref(): string {
-  return pageUrl("", location.origin, import.meta.env.BASE_URL);
+  const base = import.meta.env.BASE_URL;
+  const prefix = base.endsWith("/") ? base : `${base}/`;
+  return pageUrl("", location.origin, `${prefix}secret-santa/`);
 }

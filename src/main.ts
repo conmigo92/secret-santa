@@ -2,6 +2,7 @@ import "@fontsource/figtree/latin-400.css";
 import "@fontsource/figtree/latin-600.css";
 import "@fontsource/mountains-of-christmas/latin-700.css";
 import { decodeLink } from "./domain/link";
+import { pageTitle } from "./site";
 import "./style.css";
 import { mountOrganizer } from "./ui/organizer";
 import { mountBrokenLink, mountParticipant } from "./ui/participant";
@@ -15,17 +16,17 @@ window.addEventListener("hashchange", () => show(root));
 function show(root: HTMLElement): void {
   const token = readToken();
   if (!token) {
-    document.title = "Secret Santa";
+    document.title = pageTitle("Secret Santa");
     mountOrganizer(root);
     return;
   }
   const payload = decodeLink(token);
   if (!payload) {
-    document.title = "Link doesn't open";
+    document.title = pageTitle("Link doesn't open");
     mountBrokenLink(root);
     return;
   }
-  document.title = "Your Secret Santa match";
+  document.title = pageTitle("Your Secret Santa match");
   mountParticipant(root, payload);
 }
 
