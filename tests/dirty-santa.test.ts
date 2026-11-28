@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   chooseSwap,
   DEFAULT_FACE_MAP,
+  DICE_SETTINGS,
+  minutesToDurationMs,
   parseDice,
   pause,
   resume,
@@ -198,5 +200,76 @@ describe("dirty santa", () => {
     const done = tick(started({ durationMs: duration }), duration);
     expect(parseDice(JSON.parse(JSON.stringify(done)))).toEqual(done);
     expect(parseDice(null)).toBeNull();
+  });
+
+  it("follows a custom face map", () => {
+    const faces: FaceMap = {
+      1: "keep",
+      2: "allLeft",
+      3: "passRight",
+      4: "passLeft",
+      5: "swapAny",
+      6: "allRight",
+    };
+    const game = started({ faces });
+    const kept = rolled(game, 1);
+    expect(numbers(kept)).toEqual([1, 2, 3, 4]);
+    expect(kept.turn).toBe(0);
+    expect(kept.phase).toEqual({ kind: "rolling", round: 1 });
+
+    const left = rolled(game, 2);
+    expect(numbers(left)).toEqual([4, 1, 2, 3]);
+    expect(left.turn).toBe(1);
+    expect(left.phase).toEqual({ kind: "rolling", round: 1 });
+
+    const passedRight = rolled(game, 3);
+    expect(numbers(passedRight)).toEqual([4, 2, 3, 1]);
+    expect(passedRight.turn).toBe(1);
+    expect(passedRight.phase).toEqual({ kind: "rolling", round: 1 });
+
+    const passedLeft = rolled(game, 4);
+    expect(numbers(passedLeft)).toEqual([2, 1, 3, 4]);
+    expect(passedLeft.turn).toBe(1);
+    expect(passedLeft.phase).toEqual({ kind: "rolling", round: 1 });
+
+    const waiting = rolled(game, 5);
+    expect(numbers(waiting)).toEqual([1, 2, 3, 4]);
+    expect(waiting.phase).toEqual({ kind: "chooseSwap", round: 1 });
+    expect(waiting.turn).toBe(0);
+    const swapped = chooseSwap(waiting, 2, 0);
+    expect(swapped.ok).toBe(true);
+    if (!swapped.ok) return;
+    expect(numbers(swapped.game)).toEqual([3, 2, 1, 4]);
+    expect(swapped.game.turn).toBe(1);
+    expect(swapped.game.phase).toEqual({ kind: "rolling", round: 1 });
+
+    const right = rolled(game, 6);
+    expect(numbers(right)).toEqual([2, 3, 4, 1]);
+    expect(right.turn).toBe(1);
+    expect(right.phase).toEqual({ kind: "rolling", round: 1 });
+  });
+
+  it("fills missing faces and rounds from the defaults", () => {
+    const faces: FaceMap = { ...DEFAULT_FACE_MAP, 1: "keep", 6: "passLeft" };
+    const game = started({ durationMs: 15_000, round2: true, faces });
+    const raw = JSON.parse(JSON.stringify(game));
+    delete raw.faces;
+    delete raw.round2;
+    const loaded = parseDice(raw);
+    expect(loaded).toEqual({ ...game, faces: { ...DEFAULT_FACE_MAP }, round2: false });
+
+    raw.faces = { ...DEFAULT_FACE_MAP, 1: "dance" };
+    raw.round2 = false;
+    expect(parseDice(raw)).toBeNull();
+  });
+
+  it("accepts only durations inside the settings bounds", () => {
+    const rules = { round2: false, faces: DEFAULT_FACE_MAP };
+    const min = minutesToDurationMs(DICE_SETTINGS.minutes.min);
+    const max = minutesToDurationMs(DICE_SETTINGS.minutes.max);
+    expect(startDice(names, { ...rules, durationMs: min }, 0).ok).toBe(true);
+    expect(startDice(names, { ...rules, durationMs: min - 1 }, 0).ok).toBe(false);
+    expect(startDice(names, { ...rules, durationMs: max }, 0).ok).toBe(true);
+    expect(startDice(names, { ...rules, durationMs: max + 1 }, 0).ok).toBe(false);
   });
 });
