@@ -33,3 +33,7 @@ Open Dirty Santa from the home page or the games nav. Enter names in seat order.
 ## Christmas Trivia
 
 Open Christmas Trivia from the home page or the games nav. Add players or teams. Set the seconds for each question, and set how many questions to play. The host can add custom questions before the game. Those questions are always included, so the count has to cover them. The page shows a multiple-choice question. Show the answer, give the point to one player or to nobody, then go on. A timer of 0 waits for the host. The scores stay in this browser until you start a new game.
+
+## Charades
+
+Open Charades from the home page or the games nav. Add two or more teams. Pick charades or pictionary, pick easy, medium, hard, or a mix, and set the seconds. The actor taps Show word. The guessers should be looking away. Got it scores a point and passes to the next team. Skip deals a new word to the same team. The scores stay in this browser until you start a new game.
